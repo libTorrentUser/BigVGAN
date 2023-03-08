@@ -1,3 +1,7 @@
+# for tortoise-tts
+
+run `pip install -e .`
+
 ## BigVGAN: A Universal Neural Vocoder with Large-Scale Training
 #### Sang-gil Lee, Wei Ping, Boris Ginsburg, Bryan Catanzaro, Sungroh Yoon
 

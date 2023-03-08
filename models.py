@@ -203,6 +203,30 @@ class BigVGAN(torch.nn.Module):
         remove_weight_norm(self.conv_pre)
         remove_weight_norm(self.conv_post)
 
+    def eval(self, inference=False):
+        super().eval()
+        # don't remove weight norm while validation in training loop
+        if inference:
+            self.remove_weight_norm()
+
+    @torch.no_grad()
+    def inference(self, c, zero_pad=True, postclamp=True, use_s16le=False):
+        if zero_pad: # see https://github.com/seungwonpark/melgan/issues/8
+            # pad input mel with zeros to cut artifact
+            zero = torch.full((c.shape[0], self.h.num_mels, 10), -11.5129).to(c.device)
+            mel = torch.cat((c, zero), dim=2) # torch.Size([1, 100, 417]) -> torch.Size([1, 100, 427])
+        else: mel = c
+
+        audio = self.forward(mel)
+
+        if postclamp: # not sure what this does honestly, just copying from univnet
+            audio = audio[:, :, : -(self.h.hop_size * 10)]
+            audio = audio.clamp(min=-1, max=1)
+        if use_s16le:
+            from BigVGAN.meldataset import MAX_WAV_VALUE
+            audio = (audio * MAX_WAV_VALUE).short()
+
+        return audio
 
 class DiscriminatorP(torch.nn.Module):
     def __init__(self, h, period, kernel_size=5, stride=3, use_spectral_norm=False):
