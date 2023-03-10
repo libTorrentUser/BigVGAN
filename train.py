@@ -19,15 +19,24 @@ from torch.utils.data import DistributedSampler, DataLoader
 import torch.multiprocessing as mp
 from torch.distributed import init_process_group
 from torch.nn.parallel import DistributedDataParallel
-from env import AttrDict, build_env
-from meldataset import MelDataset, mel_spectrogram, get_dataset_filelist, MAX_WAV_VALUE
-from models import BigVGAN, MultiPeriodDiscriminator, MultiResolutionDiscriminator,\
-    feature_loss, generator_loss, discriminator_loss
-from utils import plot_spectrogram, plot_spectrogram_clipped, scan_checkpoint, load_checkpoint, save_checkpoint, save_audio
+
 import torchaudio as ta
 from pesq import pesq
 from tqdm import tqdm
 import auraloss
+
+try: 
+    from .env import AttrDict, build_env
+    from .meldataset import MelDataset, mel_spectrogram, get_dataset_filelist, MAX_WAV_VALUE
+    from .models import BigVGAN, MultiPeriodDiscriminator, MultiResolutionDiscriminator,\
+        feature_loss, generator_loss, discriminator_loss
+    from .utils import plot_spectrogram, plot_spectrogram_clipped, scan_checkpoint, load_checkpoint, save_checkpoint, save_audio
+except ImportError:
+    from env import AttrDict, build_env
+    from meldataset import MelDataset, mel_spectrogram, get_dataset_filelist, MAX_WAV_VALUE
+    from models import BigVGAN, MultiPeriodDiscriminator, MultiResolutionDiscriminator,\
+        feature_loss, generator_loss, discriminator_loss
+    from utils import plot_spectrogram, plot_spectrogram_clipped, scan_checkpoint, load_checkpoint, save_checkpoint, save_audio
 
 torch.backends.cudnn.benchmark = False
 

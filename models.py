@@ -11,9 +11,16 @@ import torch.nn as nn
 from torch.nn import Conv1d, ConvTranspose1d, Conv2d
 from torch.nn.utils import weight_norm, remove_weight_norm, spectral_norm
 
-import activations
-from utils import init_weights, get_padding
-from alias_free_torch import *
+try:  # relative imports
+    from . import activations
+    from .utils import init_weights, get_padding
+    from .alias_free_torch import *
+    from .meldataset import MAX_WAV_VALUE
+except ImportError: # absolute imports????
+    import activations
+    from utils import init_weights, get_padding
+    from alias_free_torch import *
+    from meldataset import MAX_WAV_VALUE
 
 LRELU_SLOPE = 0.1
 
@@ -127,6 +134,10 @@ class BigVGAN(torch.nn.Module):
         super(BigVGAN, self).__init__()
         self.h = h
 
+        self.mel_channel = h.num_mels
+        self.noise_dim = h.n_fft
+        self.hop_length = h.hop_size
+
         self.num_kernels = len(h.resblock_kernel_sizes)
         self.num_upsamples = len(h.upsample_rates)
 
@@ -204,7 +215,8 @@ class BigVGAN(torch.nn.Module):
         remove_weight_norm(self.conv_post)
 
     def eval(self, inference=False):
-        super().eval()
+        #super().eval()
+        super(BigVGAN,self).eval()
         # don't remove weight norm while validation in training loop
         if inference:
             self.remove_weight_norm()
@@ -223,7 +235,6 @@ class BigVGAN(torch.nn.Module):
             audio = audio[:, :, : -(self.h.hop_size * 10)]
             audio = audio.clamp(min=-1, max=1)
         if use_s16le:
-            from BigVGAN.meldataset import MAX_WAV_VALUE
             audio = (audio * MAX_WAV_VALUE).short()
 
         return audio
