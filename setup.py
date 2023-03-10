@@ -1,7 +1,6 @@
 import setuptools
 
 long_description = 'lol'
-
 setuptools.setup(
     name="BigVGAN",
     packages=setuptools.find_packages(),
@@ -13,10 +12,6 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/152334H/BigVGAN",
     project_urls={},
-    scripts=[
-        "./inference_e2e.py",
-        "./inference.py",
-    ],
     include_package_data=True,
     install_requires=[
         "torch",

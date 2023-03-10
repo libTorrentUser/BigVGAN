@@ -8,9 +8,9 @@ import torch
 from torch.nn.utils import weight_norm
 matplotlib.use("Agg")
 import matplotlib.pylab as plt
-from meldataset import MAX_WAV_VALUE
 from scipy.io.wavfile import write
 
+from .meldataset import MAX_WAV_VALUE
 
 def plot_spectrogram(spectrogram):
     fig, ax = plt.subplots(figsize=(10, 2))
